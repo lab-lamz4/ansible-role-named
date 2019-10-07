@@ -1,0 +1,55 @@
+// {{ ansible_managed }}
+
+options {
+
+{% if named_config_listen_on | length>0 %}
+        listen-on port 53 {
+{% for ip in named_config_listen_on %}
+          {{ ip }};
+{% endfor %}
+        };
+{% else %}
+        listen-on port 53 { any; };
+{% endif %}
+
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+
+{% if named_config_allow_query | length>0 %}
+        allow-query {
+{% for allow_ip in named_config_allow_query %}
+          {{ allow_ip }};
+{% endfor %}
+        };
+{% else %}
+        allow-query { any; };
+{% endif %}
+
+{% if named_config_allow_recursion | length>0 %}
+        allow-recursion {
+{% for allow_rec_ip in named_config_allow_recursion %}
+          {{ allow_rec_ip }};
+{% endfor %}
+        };
+{% else %}
+        allow-recursion { any; };
+{% endif %}
+
+        minimal-responses yes;
+{% if named_config_master_forwarders | length>0 %}
+        forwarders {
+{% for forwarders in named_config_master_forwarders %}
+          {{ forwarders }};
+{% endfor %}
+        };
+{% endif %}
+        recursion yes;
+        dnssec-enable no;
+        dnssec-validation no;
+
+        managed-keys-directory "/var/named/dynamic";
+        pid-file "/run/named/named.pid";
+        session-keyfile "/run/named/session.key";
+};

@@ -1,0 +1,6 @@
+---
+- name: restart named
+  service: name={{ named_service_name }} state=restarted
+
+- name: reload named
+  service: name={{ named_service_name }} state=reloaded

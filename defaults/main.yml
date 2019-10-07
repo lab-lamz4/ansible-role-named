@@ -1,0 +1,26 @@
+---
+named_config_master_zones:
+  - name: example.com
+    ttl: '4h'
+    serial: '2019100701'
+    cache_time: '2d'
+    ns_rows:
+      - name: 'www'
+        class: 'IN'
+        type: 'A'
+        ip: '127.0.0.1'
+      - name: 'ns1'
+        class: 'IN'
+        type: 'A'
+        ip: '127.0.0.1'
+
+named_config_master_allow_transfer: []
+named_config_master_forwarders: []
+named_config_allow_recursion: []
+named_service_state: started
+named_service_enabled: yes
+named_pkg_state: present
+named_base_zones_path: "/var/named"
+named_masterzones_path: "masters"
+named_config_listen_on: []
+named_config_allow_query: []

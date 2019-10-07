@@ -1,0 +1,13 @@
+$TTL    {{ domain.ttl }}
+$ORIGIN example.com.
+@           IN      SOA     ns1.{{ domain.name }}.    hostmaster.{{ domain.name }}. (
+                            {{ domain.serial }}    ; Serial
+                            1d                     ; slave refresh (1 day)
+                            2h                     ; slave retry time in case of a problem (2 hours)
+                            2w                     ; slave expiration time (2 weeks)
+                            {{ domain.cache_time }}; minimum caching time in case of failed lookups (2 days)
+                            )
+            IN      NS      ns1.{{ domain.name }}.
+{% for row in domain.ns_rows %}
+{{ row.name }}         {{ row.class }}      {{ row.type }}       {{ row.ip }}
+{% endfor %}

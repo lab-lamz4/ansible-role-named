@@ -1,0 +1,65 @@
+---
+- name: Install named
+  yum:
+    name: "{{ named_pkgs }}"
+    state: "{{ named_pkg_state }}"
+
+- name: Setup zone directory
+  file:
+    dest: "{{ named_base_zones_path }}/{{ zone }}"
+    state: directory
+    owner: "{{ named_user }}"
+    group: "{{ named_group }}"
+    mode: 0755
+  loop:
+  - masters
+  loop_control:
+    loop_var: zone
+
+- name: Setup zones
+  template:
+    src: named.conf.local.{{ zone }}.j2
+    dest: "{{ named_config_basepath }}/named.conf.local.{{ zone }}"
+    owner: "{{ named_user }}"
+    group: "{{ named_group }}"
+    mode: 0600
+  loop:
+  - master
+  loop_control:
+    loop_var: zone
+  notify: reload named
+
+- name: Configure named
+  copy:
+    src: named.conf
+    dest: "/etc/named.conf"
+    owner: "{{ named_user }}"
+    group: "{{ named_group }}"
+    mode: 0600
+  notify: restart named
+
+- name: Configure named options
+  template:
+    src: named.conf.options.j2
+    dest: "{{ named_config_basepath }}/named.conf.options"
+    owner: "{{ named_user }}"
+    group: "{{ named_group }}"
+    mode: 0600
+  notify: restart named
+
+- name: Copy master zone files
+  template:
+    src: "{{ named_masterzones_path }}/db.template"
+    dest: "{{ named_base_zones_path }}/{{ named_masterzones_path }}/db.{{ domain.name }}"
+    owner: "{{ named_user }}"
+    group: "{{ named_group }}"
+  loop: "{{ named_config_master_zones }}"
+  loop_control:
+    loop_var: domain
+  notify: reload named
+
+- name: Start or Stop named service
+  service:
+    name: "{{ named_service_name }}"
+    state: "{{ named_service_state }}"
+    enabled: "{{ named_service_enabled }}"
