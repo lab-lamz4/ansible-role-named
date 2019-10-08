@@ -1,5 +1,5 @@
 $TTL    {{ domain.ttl }}
-$ORIGIN example.com.
+$ORIGIN {{ domain.name }}.
 @           IN      SOA     ns1.{{ domain.name }}.    hostmaster.{{ domain.name }}. (
                             {{ domain.serial }}    ; Serial
                             1d                     ; slave refresh (1 day)
